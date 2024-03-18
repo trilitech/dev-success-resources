@@ -1,4 +1,5 @@
 # Adaptive issuance tutorial - cheatsheet
+Simply copy and paste a whole cheatsheet into your favourite text editor with MD files support. 
 
 ## Setup
    Start a dailynet baker, based on [Dailynet](https://teztnets.com/dailynet-about)
@@ -7,11 +8,13 @@ Before you start developing, please get the following values:
 - name of the instance (`NAME_OF_THE_INSTANCE`), eg. `dailynet_walkthrough`
 - build name (`BUILD_NAME`), eg. `tezos/tezos:master_6ac8e796_20240205215132`
 - RPC endpoint (`RPC_ENDPOINT`), eg. `https://rpc.dailynet-2024-02-06.teztnets.com`
+
 | Parameter            | Value |
 |----------------------|-------|
 | NAME_OF_THE_INSTANCE |       |
 | BUILD_NAME           |       |
 | RPC_ENDPOINT         |       |
+
 ### Command template
 == Please replace the values from above with the up-to-date onces. ==
 ```
