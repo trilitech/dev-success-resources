@@ -10,12 +10,10 @@ And fill the table below starting with the values from [Dailynet](~https://teztn
 | Parameter            | Value    | Source                                            |
 |----------------------|----------|---------------------------------------------------|
 | NAME_OF_THE_INSTANCE | tutorial | You can change it                                 |
-| BUILD_NAME           |          | [Dailynet](~https://teztnets.com/dailynet-about~) |
-| FAUCET_URL           |          | [Dailynet](~https://teztnets.com/dailynet-about~) |
 | RPC_ENDPOINT         |          | [Dailynet](~https://teztnets.com/dailynet-about~) |
+| BUILD_NAME           |          | [Dailynet](~https://teztnets.com/dailynet-about~) |
 | BAKER_ADDRESS        |          | Step 1.2                                          |
-| DELEGATOR_ADDRESS    |          | Step 2.1                                          |
-| STAKER_ADDRESS       |          | Step 2.2                                          |
+
 
 ### Step 1: Start the baker on Dailynet
 ### 1.1 Start the baker: Command template
@@ -25,11 +23,6 @@ docker run -it --rm --name "NAME_OF_THE_INSTANCE" --entrypoint=/bin/sh BULD_NAME
 
 ```
 
-### Example command (DO NOT COPY)
-```
-docker run -it --rm --name "dailynet_walkthrough" --entrypoint=/bin/sh tezos/tezos:master_6ac8e796_20240205215132 -c "octez-client --endpoint https://rpc.dailynet-2024-02-06.teztnets.com gen keys baker0 && octez-baker-alpha --endpoint https://rpc.dailynet-2024-02-06.teztnets.com run remotely baker0 --liquidity-baking-toggle-vote pass"
-
-```
 Once the container is running, use the following commands:
 - get into the container in a second tab in your terminal:
 ```
@@ -65,8 +58,8 @@ Secret Key: unencryptxxxxxxxigeT4axjsZZ9gZ3i
 ```
 ### 1.4 Fund the baker and the stash
 Fund 6001 tez each:
-- [ ] baker0: FAUCET_URL
-- [ ] stash0: FAUCET_URL
+- [ ] baker0: 
+- [ ] stash0: 
 
 Verify 6001 tez each:
 - [ ] baker0: `octez-client get balance for baker0`
