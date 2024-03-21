@@ -1,21 +1,117 @@
 # Adaptive issuance tutorial - cheatsheet
 Simply copy and paste a whole cheatsheet into your favourite text editor with MD files support. 
 
-## Before you start
+## Local Sandbox
+### Step 1 - Run local sandbox
+```
+image=oxheadalpha/flextesa:20230915
+docker run --rm --name my-sandbox --detach \
+            -e block_time=3 \
+            "$image" oxfordbox start_adaptive_issuance
+```
+
+Set the alias to make it easier use:
+```
+alias tcli='docker exec my-sandbox octez-client'
+```
+### Step 2 - Baker
+Get the baker's hash:
+```
+tcli show address baker0
+Hash: tz1YPSCGWXwBdTncK2aCctSZAXWvGsGwVJqU
+```
+
+Adaptive issuance cycle
+```
+tcli rpc get /chains/main/blocks/head/context/adaptive_issuance_launch_cycle
+```
+
+Current cycle
+```
+tcli rpc get chains/main/blocks/head | jq .metadata.level_info.cycle
+```
+
+Expected issuance for upcoming cycles:
+```
+tcli rpc get /chains/main/blocks/head/context/issuance/expected_issuance | jq
+```
+### Step 3 - Baker to accept 3rd party stakers
+### Active parameters
+Let’s check the current staking parameters:
+```
+tcli rpc get "chains/main/blocks/head/context/delegates/${baker_hash}/active_staking_parameters" | jq
+```
+#### Example output
+```
+tcli rpc get "chains/main/blocks/head/context/delegates/${baker_hash}/active_staking_parameters" | jq
+{
+  "limit_of_staking_over_baking_millionth": 0,
+  "edge_of_baking_over_staking_billionth": 1000000000
+}
+```
+
+### Update the parameters
+```
+tcli set delegate parameters for baker0 --limit-of-staking-over-baking 5 --edge-of-baking-over-staking 0.15
+
+```
+This change will take effect after 3 cycles. Check pending parameters:
+```
+tcli rpc get chains/main/blocks/head/context/delegates/${baker_hash}/pending_staking_parameters | jq 
+```
+
+Now baker0 is ready to accept co-stakers.
+
+### Step 4 - Staking mechanism 
+Create a staker:
+```
+tcli gen keys staker
+```
+Get some funds from Alice
+```
+tcli get balance for alice
+
+tcli transfer 1000001 from alice to staker --burn-cap 1
+```
+Set delegate for `staker` to `baker0`
+```
+tcli set delegate for staker to baker0
+tcli get balance for staker
+tcli stake 1000000 for staker
+tcli get balance for staker
+
+```
+Shift in total issuance:
+```
+tcli rpc get /chains/main/blocks/head/context/issuance/expected_issuance | jq
+```
+### Step 5 - Unstake
+```
+tcli unstake everything for staker
+tcli rpc get "/chains/main/blocks/head/metadata" | jq .level_info.cycle
+tcli finalize unstake for staker
+tcli get balance for staker
+
+```
+Check the balance to see the rewards!
+
+
+
+## Testnets
 Before you start developing, please get the following values:
 - build name (`BUILD_NAME`), eg. `tezos/tezos:master_6ac8e796_20240205215132`
 - RPC endpoint (`RPC_ENDPOINT`), eg. `https://rpc.dailynet-2024-02-06.teztnets.com`
-And fill the table below starting with the values from [Dailynet](~https://teztnets.com/dailynet-about~) and later in the next steps it will be useful to have the addresses for the `baker`, `delegator` and `staker`
+And fill the table below starting with the values from [Testnet](https://teztnets.com/) and later in the next steps it will be useful to have the addresses for the `baker`, `delegator` and `staker`
 
 | Parameter            | Value    | Source                                            |
 |----------------------|----------|---------------------------------------------------|
 | NAME_OF_THE_INSTANCE | tutorial | You can change it                                 |
-| RPC_ENDPOINT         |          | [Dailynet](~https://teztnets.com/dailynet-about~) |
-| BUILD_NAME           |          | [Dailynet](~https://teztnets.com/dailynet-about~) |
+| RPC_ENDPOINT         |          | [Testnet](https://teztnets.com/)                  |
+| BUILD_NAME           |          | [Testnet](https://teztnets.com/)                  |
 | BAKER_ADDRESS        |          | Step 1.2                                          |
 
 
-### Step 1: Start the baker on Dailynet
+### Step 1: Start the baker on Testnet
 ### 1.1 Start the baker: Command template
 Please replace the values from the table below above 
 ```
@@ -78,8 +174,6 @@ sudo apk add jq
 octez-client rpc get chains/main/blocks/head/context/delegates/BAKER_ADDRESS/active_staking_parameters | jq 
 
 octez-client set delegate parameters for baker0 --limit-of-staking-over-baking 5 --edge-of-baking-over-staking 1
-
-sudo apk add jq
 
 octez-client rpc get chains/main/blocks/head/context/delegates/BAKER_ADDRESS/pending_staking_parameters | jq 
 
